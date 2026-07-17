@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: docker.io/postgres:latest
+    container_name: financial-transactions-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: financial-transactions-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - financial_transactions_data:/var/lib/postgresql/data
+
+volumes:
+  financial_transactions_data:
