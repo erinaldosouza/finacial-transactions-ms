@@ -1,0 +1,35 @@
+package com.test_case.financial_transactions_ms.controllers;
+
+import com.test_case.financial_transactions_ms.dtos.AccountDTO;
+import com.test_case.financial_transactions_ms.services.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+
+@RestController
+@RequestMapping("v1/accounts")
+public class AccountController {
+
+    private final AccountService accountService;
+
+    @Autowired
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    @GetMapping("{uuid}")
+    public ResponseEntity<AccountDTO> getAccount(@PathVariable("uuid") String uuid) {
+        return ResponseEntity.ok(accountService.findByUuid(uuid).toDTO());
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> createAccount(@RequestBody AccountDTO accountDTO) {
+        var createdAccount = accountService.save(accountDTO.toEntity());
+        return  ResponseEntity
+                .created(URI.create("v1/accounts/" + createdAccount.getUuid()))
+                .build();
+    }
+
+}
