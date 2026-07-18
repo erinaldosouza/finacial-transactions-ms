@@ -28,6 +28,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction findByUuid(String uuid) {
-        return transactionRepository.findByUuid(uuid);
+        return transactionRepository.findByUuid(uuid).orElseThrow();
     }
 }
