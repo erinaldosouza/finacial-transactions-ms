@@ -2,6 +2,7 @@ package com.test_case.financial_transactions_ms.controllers;
 
 import com.test_case.financial_transactions_ms.dtos.AccountDTO;
 import com.test_case.financial_transactions_ms.services.AccountService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +26,8 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createAccount(@RequestBody AccountDTO accountDTO) {
-        var createdAccount = accountService.save(accountDTO.toEntity());
+    public ResponseEntity<Void> createAccount(@Valid @RequestBody AccountDTO accountDTO) {
+        var createdAccount = accountService.create(accountDTO.toEntity());
         return  ResponseEntity
                 .created(URI.create("v1/accounts/" + createdAccount.getUuid()))
                 .build();
