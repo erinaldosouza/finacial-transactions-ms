@@ -25,7 +25,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction create(Transaction transaction) {
-        if(transaction.getAmount().doubleValue() <= BigDecimal.ZERO.doubleValue()) {
+
+        if (transaction.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Transaction value must be greater than zero");
         }
 
@@ -41,7 +42,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction findById(Long id) {
-        return transactionRepository.findById(id).orElse(null);
+        return transactionRepository.findById(id).orElseThrow();
     }
 
     @Override
