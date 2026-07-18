@@ -37,6 +37,54 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ProblemDetail handle(ResourceAlreadyExistsException ex) {
+        log.error("[GLOBAL_EXCEPTION_HANDLER] Workflow failed due to {}", ex.getClass(), ex);
+        ProblemDetail problemDetail =
+                ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_CONTENT);
+
+        problemDetail.setTitle("Operation Failed");
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+        var cause = ex.getCause() != null ? ex.getCause() : ex;
+        problemDetail.setDetail("Invalid Request");
+        problemDetail.setProperty("errors", cause.getMessage());
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ResourceDoesntExistsException.class)
+    public ProblemDetail handle(ResourceDoesntExistsException ex) {
+        log.error("[GLOBAL_EXCEPTION_HANDLER] Workflow failed due to {}", ex.getClass(), ex);
+        ProblemDetail problemDetail =
+                ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_CONTENT);
+
+        problemDetail.setTitle("Operation Failed");
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+        var cause = ex.getCause() != null ? ex.getCause() : ex;
+        problemDetail.setDetail("Invalid Request");
+        problemDetail.setProperty("errors", cause.getMessage());
+
+        return problemDetail;
+    }
+
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handle(IllegalArgumentException ex) {
+        log.error("[GLOBAL_EXCEPTION_HANDLER] Workflow failed due to {}", ex.getClass(), ex);
+        ProblemDetail problemDetail =
+                ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+
+        problemDetail.setTitle("Operation Failed");
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+        var cause = ex.getCause() != null ? ex.getCause() : ex;
+        problemDetail.setDetail("Inconsistent Request");
+        problemDetail.setProperty("errors", cause.getMessage());
+
+        return problemDetail;
+    }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handle(Exception ex) {

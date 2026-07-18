@@ -8,4 +8,5 @@ import java.util.Optional;
 @NoRepositoryBean
 public interface AppJpaRepository<T, ID> extends JpaRepository<T, ID> {
     Optional<T> findByUuid(String uuid);
+    Boolean existsByUuid(String documentNumber);
 }

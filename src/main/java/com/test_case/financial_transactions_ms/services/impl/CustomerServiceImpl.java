@@ -18,7 +18,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer save(Customer customer) {
+    public Customer create(Customer customer) {
         return null;
     }
 

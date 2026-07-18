@@ -1,13 +1,15 @@
 package com.test_case.financial_transactions_ms.entities;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.UUID;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="customers")
 public class Customer {
@@ -20,6 +22,11 @@ public class Customer {
     @OneToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    @PrePersist
+    private void generateUuid() {
+        this.uuid = UUID.randomUUID().toString();
+    }
 
 }
 

@@ -1,12 +1,14 @@
 package com.test_case.financial_transactions_ms.services.impl;
 
 import com.test_case.financial_transactions_ms.entities.Account;
-import com.test_case.financial_transactions_ms.exceptions.CustomerAlreadyExistsException;
+import com.test_case.financial_transactions_ms.exceptions.ResourceAlreadyExistsException;
 import com.test_case.financial_transactions_ms.repositories.AccountRepository;
 import com.test_case.financial_transactions_ms.services.AccountService;
 import com.test_case.financial_transactions_ms.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Random;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -20,12 +22,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account save(Account account) {
+    public Account create(Account account) {
         var documentNumber = account.getCustomer().getDocumentNumber();
         var customer  = customerService.existsByDocumentNumber(documentNumber);
         if(customer) {
-            throw new CustomerAlreadyExistsException(String.format(documentNumber, "Customer with document number: $s already exists"));
+            throw new ResourceAlreadyExistsException(String.format("Customer with document number: %s already have an account", documentNumber));
         }
+
+        String accountNumber = String.format("%09d", new Random().nextInt(1_000_000_000));
+
+        account.setNumber(accountNumber);
+        account.getCustomer().setAccount(account);
 
         return accountRepository.save(account);
     }
@@ -37,6 +44,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account findByUuid(String uuid) {
-        return null;
+        return accountRepository.findByUuid(uuid).orElseThrow();
     }
 }
