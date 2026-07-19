@@ -9,9 +9,9 @@ spring:
     enabled: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/financial-transactions-db
-    username: postgres
-    password: postgres
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/financial-transactions-db}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -22,4 +22,10 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+springdoc:
+  swagger-ui:
+    url: /openapi.yaml
+    enabled: true
+
 
