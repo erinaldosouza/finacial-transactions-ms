@@ -14,6 +14,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   pgadmin:
     image: docker.io/dpage/pgadmin4:9
     container_name: pgadmin
@@ -25,6 +31,19 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     restart: unless-stopped
+
+  financial-transactions-ms:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    container_name: financial-transactions-ms
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/financial-transactions-db
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+    ports:
+      - "8080:8080"
 
 volumes:
   postgres_data:

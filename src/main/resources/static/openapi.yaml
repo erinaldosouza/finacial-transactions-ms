@@ -1,0 +1,167 @@
+openapi: 3.0.3
+info:
+  title: Financial Transactions MS API
+  description: API for managing accounts and transactions
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /v1/accounts:
+    post:
+      summary: Create account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountDTO'
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+  /v1/accounts/{externalId}:
+    get:
+      summary: Get account by external id
+      parameters:
+        - name: externalId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponseDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /v1/transactions:
+    post:
+      summary: Create transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDTO'
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+  /v1/transactions/{externalId}:
+    get:
+      summary: Get transaction by external id
+      parameters:
+        - name: externalId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  schemas:
+    AccountDTO:
+      type: object
+      properties:
+        document_number:
+          type: string
+          description: Document number must be exactly 11 numeric characters
+      required:
+        - document_number
+    AccountResponseDTO:
+      type: object
+      properties:
+        account_id:
+          type: string
+        account_number:
+          type: string
+        document_number:
+          type: string
+      required:
+        - document_number
+    TransactionDTO:
+      type: object
+      properties:
+        account_id:
+          type: string
+        operation_type_id:
+          type: string
+          description: Operation type id (enum)
+        amount:
+          type: number
+          format: double
+      required:
+        - account_id
+        - operation_type_id
+        - amount
+    ValidationProblem:
+      type: object
+      properties:
+        detail:
+          type: string
+        instance:
+          type: string
+        status:
+          type: integer
+        title:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        errors:
+          type: array
+          items:
+            type: string
+    Problem:
+      type: object
+      properties:
+        detail:
+          type: string
+        status:
+          type: integer
+        title:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        errors:
+          type: array
+          items:
+            type: string
+
