@@ -21,20 +21,21 @@ public class Transaction implements AppEntity<TransactionDTO, Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long  id;
-    private String uuid;
-    private String accountUuid;
-    @Enumerated(EnumType.STRING)
+    private String externalId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Account account;
+    @Column(name="operation_type_id")
     private OperationType operationType;
     private BigDecimal amount;
     private LocalDateTime dateTime;
 
     public TransactionDTO toDTO() {
-        return new TransactionDTO(uuid, accountUuid, operationType, amount);
+        return new TransactionDTO(externalId, account.getExternalId(), operationType, amount);
     }
 
     @PrePersist
-    private void generateUuid() {
-        this.uuid = UUID.randomUUID().toString();
+    private void generateExternalId() {
+        this.externalId = UUID.randomUUID().toString();
         this.dateTime = LocalDateTime.now();
     }
 

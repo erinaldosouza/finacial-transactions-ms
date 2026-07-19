@@ -1,9 +1,10 @@
-package com.test_case.financial_transactions_ms.services;
+package com.test_case.financial_transactions_ms.uint_tests.services;
 
 import com.test_case.financial_transactions_ms.entities.Account;
 import com.test_case.financial_transactions_ms.entities.Customer;
 import com.test_case.financial_transactions_ms.exceptions.ResourceAlreadyExistsException;
 import com.test_case.financial_transactions_ms.repositories.AccountRepository;
+import com.test_case.financial_transactions_ms.services.CustomerService;
 import com.test_case.financial_transactions_ms.services.impl.AccountServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,18 +32,21 @@ class AccountServiceImplTest {
 
     @Test
     void shouldCreateAccountSuccessfully() {
+        // given
         Customer customer = new Customer();
         customer.setDocumentNumber("12345678900");
 
         Account account = new Account();
         account.setCustomer(customer);
 
+        // when
+
         when(customerService.existsByDocumentNumber("12345678900")).thenReturn(false);
-
         when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
+        when(customerService.create(account.getCustomer())).thenAnswer(invocation -> invocation.getArgument(0));
         Account result = service.create(account);
 
+        // then
         assertNotNull(result.getNumber());
         assertEquals(9, result.getNumber().length());
         assertSame(result, customer.getAccount());
@@ -52,16 +56,18 @@ class AccountServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCustomerAlreadyHasAccount() {
-
+        // given
         Customer customer = new Customer();
         customer.setDocumentNumber("12345678900");
 
         Account account = new Account();
         account.setCustomer(customer);
 
+        // when
         when(customerService.existsByDocumentNumber("12345678900"))
                 .thenReturn(true);
 
+        // then
         assertThrows(
                 ResourceAlreadyExistsException.class,
                 () -> service.create(account));
@@ -71,23 +77,27 @@ class AccountServiceImplTest {
 
     @Test
     void shouldFindAccountById() {
-
+        // given
         Account account = new Account();
 
+        // when
         when(accountRepository.findById(1L))
                 .thenReturn(Optional.of(account));
 
         Account result = service.findById(1L);
 
+        // then
         assertSame(account, result);
     }
 
     @Test
     void shouldThrowExceptionWhenAccountIdDoesNotExist() {
 
+        // when
         when(accountRepository.findById(1L))
                 .thenReturn(Optional.empty());
 
+        // then
         assertThrows(
                 java.util.NoSuchElementException.class,
                 () -> service.findById(1L));
@@ -96,24 +106,29 @@ class AccountServiceImplTest {
     @Test
     void shouldFindAccountByUuid() {
 
+        // given
         Account account = new Account();
 
-        when(accountRepository.findByUuid("uuid"))
+        // when
+        when(accountRepository.findByExternalId("uuid"))
                 .thenReturn(Optional.of(account));
 
-        Account result = service.findByUuid("uuid");
+        Account result = service.findByExternalId("uuid");
 
+        // then
         assertSame(account, result);
     }
 
     @Test
     void shouldThrowExceptionWhenAccountUuidDoesNotExist() {
 
-        when(accountRepository.findByUuid("uuid"))
+        // when
+        when(accountRepository.findByExternalId("uuid"))
                 .thenReturn(Optional.empty());
 
+        // then
         assertThrows(
                 java.util.NoSuchElementException.class,
-                () -> service.findByUuid("uuid"));
+                () -> service.findByExternalId("uuid"));
     }
 }

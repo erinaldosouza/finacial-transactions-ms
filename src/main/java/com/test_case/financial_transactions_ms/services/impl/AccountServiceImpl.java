@@ -29,10 +29,12 @@ public class AccountServiceImpl implements AccountService {
             throw new ResourceAlreadyExistsException(String.format("Customer with document number: %s already have an account", documentNumber));
         }
 
-        String accountNumber = String.format("%09d", new Random().nextInt(1_000_000_000));
+        var createdCustomer = customerService.create(account.getCustomer());
+        createdCustomer.setAccount(account);
+        account.setCustomer(createdCustomer);
 
+        String accountNumber = String.format("%09d", new Random().nextInt(1_000_000_000));
         account.setNumber(accountNumber);
-        account.getCustomer().setAccount(account);
 
         return accountRepository.save(account);
     }
@@ -43,7 +45,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account findByUuid(String uuid) {
-        return accountRepository.findByUuid(uuid).orElseThrow();
+    public Account findByExternalId(String externalId) {
+        return accountRepository.findByExternalId(externalId).orElseThrow();
     }
 }

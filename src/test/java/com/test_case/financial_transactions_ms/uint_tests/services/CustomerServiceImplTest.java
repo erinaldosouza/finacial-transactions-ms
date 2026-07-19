@@ -1,4 +1,4 @@
-package com.test_case.financial_transactions_ms.services;
+package com.test_case.financial_transactions_ms.uint_tests.services;
 
 import com.test_case.financial_transactions_ms.entities.Customer;
 import com.test_case.financial_transactions_ms.repositories.CustomerRepository;
@@ -10,7 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceImplTest {
@@ -24,13 +25,16 @@ class CustomerServiceImplTest {
     @Test
     void shouldReturnTrueWhenCustomerExistsByDocumentNumber() {
 
+        // given
         String documentNumber = "12345678900";
 
+        // when
         when(customerRepository.existsByDocumentNumber(documentNumber))
                 .thenReturn(true);
 
         Boolean result = service.existsByDocumentNumber(documentNumber);
 
+        // then
         assertTrue(result);
 
         verify(customerRepository).existsByDocumentNumber(documentNumber);
@@ -39,28 +43,36 @@ class CustomerServiceImplTest {
     @Test
     void shouldReturnFalseWhenCustomerDoesNotExistByDocumentNumber() {
 
+        // given
         String documentNumber = "12345678900";
 
+        // when
         when(customerRepository.existsByDocumentNumber(documentNumber))
                 .thenReturn(false);
 
         Boolean result = service.existsByDocumentNumber(documentNumber);
 
+        // then
         assertFalse(result);
 
         verify(customerRepository).existsByDocumentNumber(documentNumber);
     }
 
     @Test
-    void shouldThrowExceptionWhenCreateIsCalled() {
+    void shouldCreateCustomerSuccessfully() {
 
-        Customer customer = new Customer();
+        // given
+        Customer customer = Customer.builder().documentNumber("12345678900").build();
+        when(customerRepository.save(customer)).thenAnswer(invocation -> invocation.getArgument(0));
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> service.create(customer));
+        // when
+        Customer result = service.create(customer);
 
-        assertEquals("Not implemented", exception.getMessage());
+        // then
+        assertNotNull(result);
+        assertEquals("12345678900", result.getDocumentNumber());
+        verify(customerRepository).save(customer);
+
     }
 
     @Test
@@ -74,11 +86,11 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFindByUuidIsCalled() {
+    void shouldThrowExceptionWhenFindByExternalIdIsCalled() {
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
-                () -> service.findByUuid("uuid"));
+                () -> service.findByExternalId("uuid"));
 
         assertEquals("Not implemented", exception.getMessage());
     }

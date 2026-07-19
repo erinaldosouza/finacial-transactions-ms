@@ -20,16 +20,16 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @GetMapping("{uuid}")
-    public ResponseEntity<TransactionDTO> getTransaction(@PathVariable(name = "uuid") String uuid) {
-        return ResponseEntity.ok(transactionService.findByUuid(uuid).toDTO());
+    @GetMapping("{externalId}")
+    public ResponseEntity<TransactionDTO> getTransaction(@PathVariable(name = "externalId") String externalId) {
+        return ResponseEntity.ok(transactionService.findByExternalId(externalId).toDTO());
     }
 
     @PostMapping
     public ResponseEntity<Void> createTransaction(@Valid @RequestBody TransactionDTO transactionDTO) {
         var createdTransaction = transactionService.create(transactionDTO.toEntity());
         return  ResponseEntity
-                .created(URI.create("v1/transactions/" + createdTransaction.getUuid()))
+                .created(URI.create("/v1/transactions/" + createdTransaction.getExternalId()))
                 .build();
     }
 }

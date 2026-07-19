@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Slf4j
@@ -48,6 +49,23 @@ public class GlobalExceptionHandler {
 
         var cause = ex.getCause() != null ? ex.getCause() : ex;
         problemDetail.setDetail("Invalid Request");
+        problemDetail.setProperty("errors", cause.getMessage());
+
+        return problemDetail;
+    }
+
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ProblemDetail handle(NoSuchElementException ex) {
+        log.error("[GLOBAL_EXCEPTION_HANDLER] Workflow failed due to {}", ex.getClass(), ex);
+        ProblemDetail problemDetail =
+                ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+
+        problemDetail.setTitle("Resource Not Found");
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+        var cause = ex.getCause() != null ? ex.getCause() : ex;
+        problemDetail.setDetail("Invalid Resource Requested");
         problemDetail.setProperty("errors", cause.getMessage());
 
         return problemDetail;

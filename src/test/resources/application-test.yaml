@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/testdata
+
+logging:
+  level:
+    org.flywaydb: DEBUG
+
+debug: true

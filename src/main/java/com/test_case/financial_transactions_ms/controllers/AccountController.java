@@ -20,16 +20,16 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping("{uuid}")
-    public ResponseEntity<AccountDTO> getAccount(@PathVariable("uuid") String uuid) {
-        return ResponseEntity.ok(accountService.findByUuid(uuid).toDTO());
+    @GetMapping("{externalId}")
+    public ResponseEntity<AccountDTO> getAccount(@PathVariable("externalId") String externalId) {
+        return ResponseEntity.ok(accountService.findByExternalId(externalId).toDTO());
     }
 
     @PostMapping
     public ResponseEntity<Void> createAccount(@Valid @RequestBody AccountDTO accountDTO) {
         var createdAccount = accountService.create(accountDTO.toEntity());
         return  ResponseEntity
-                .created(URI.create("v1/accounts/" + createdAccount.getUuid()))
+                .created(URI.create("/v1/accounts/" + createdAccount.getExternalId()))
                 .build();
     }
 
