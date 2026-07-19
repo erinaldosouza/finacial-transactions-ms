@@ -4,6 +4,7 @@ import com.test_case.financial_transactions_ms.dtos.AccountDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -18,18 +19,20 @@ public class Account implements AppEntity<AccountDTO, Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String uuid;
+    private String externalId;
     private String number;
-    @OneToOne(mappedBy = "account", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "account", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Customer customer;
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<Transaction> transactions;
 
     public AccountDTO toDTO() {
-        return new AccountDTO(uuid, number, customer.getDocumentNumber());
+        return new AccountDTO(externalId, number, customer.getDocumentNumber());
     }
 
     @PrePersist
-    private void generateUuid() {
-        this.uuid = UUID.randomUUID().toString();
+    private void generateExternalId() {
+        this.externalId = UUID.randomUUID().toString();
     }
 
 }

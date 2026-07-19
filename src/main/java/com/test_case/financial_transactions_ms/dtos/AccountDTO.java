@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Length;
 public record AccountDTO(
 
         @JsonProperty("account_id")
-        String uuid,
+        String externalId,
 
         @JsonProperty("account_number")
         String accountNumber,

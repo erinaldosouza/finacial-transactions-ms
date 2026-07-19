@@ -2,7 +2,6 @@ package com.test_case.financial_transactions_ms.services.impl;
 
 import com.test_case.financial_transactions_ms.entities.Transaction;
 import com.test_case.financial_transactions_ms.enums.OperationType;
-import com.test_case.financial_transactions_ms.exceptions.ResourceDoesntExistsException;
 import com.test_case.financial_transactions_ms.repositories.AccountRepository;
 import com.test_case.financial_transactions_ms.repositories.TransactionRepository;
 import com.test_case.financial_transactions_ms.services.TransactionService;
@@ -30,13 +29,13 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalArgumentException("Transaction value must be greater than zero");
         }
 
-        if(!accountRepository.existsByUuid(transaction.getAccountUuid())) {
-            throw new ResourceDoesntExistsException("Account not found");
-        }
-
         if(!OperationType.CREDIT_VOUCHER.equals(transaction.getOperationType())) {
             transaction.setAmount(transaction.getAmount().negate());
         }
+
+        var account = accountRepository.findByExternalId(transaction.getAccount().getExternalId()).orElseThrow();
+        transaction.setAccount(account);
+
         return transactionRepository.save(transaction);
     }
 
@@ -46,7 +45,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction findByUuid(String uuid) {
-        return transactionRepository.findByUuid(uuid).orElseThrow();
+    public Transaction findByExternalId(String uuid) {
+        return transactionRepository.findByExternalId(uuid).orElseThrow();
     }
 }

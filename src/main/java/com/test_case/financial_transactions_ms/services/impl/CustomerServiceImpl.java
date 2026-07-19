@@ -1,10 +1,8 @@
 package com.test_case.financial_transactions_ms.services.impl;
 
 import com.test_case.financial_transactions_ms.entities.Customer;
-import com.test_case.financial_transactions_ms.repositories.AccountRepository;
 import com.test_case.financial_transactions_ms.repositories.CustomerRepository;
 import com.test_case.financial_transactions_ms.services.CustomerService;
-import jdk.jshell.spi.ExecutionControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +18,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer create(Customer customer) {
-        throw new RuntimeException("Not implemented");
+        return customerRepository.save(customer);
     }
 
     @Override
@@ -29,7 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer findByUuid(String uuid) {
+    public Customer findByExternalId(String uuid) {
         throw new RuntimeException("Not implemented");
     }
 

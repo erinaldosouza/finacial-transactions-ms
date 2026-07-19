@@ -17,15 +17,15 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String uuid;
+    private String externalId;
     private String documentNumber;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
     @PrePersist
-    private void generateUuid() {
-        this.uuid = UUID.randomUUID().toString();
+    private void generateExternalId() {
+        this.externalId = UUID.randomUUID().toString();
     }
 
 }
