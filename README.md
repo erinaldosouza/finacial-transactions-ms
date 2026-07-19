@@ -2,6 +2,10 @@
 
 A simple REST API service for managing customer accounts and financial transactions with comprehensive API documentation and test coverage.
 
+> ℹ️ **Note:** This README and the project documentation are written in English because it is a requirement of the technical assessment. All source code, API documentation, and comments follow the same convention to maintain consistency throughout the project.
+
+> ℹ️ > **Note:** This application is production-oriented, but it is not intended to be a production-ready system. Production-specific concerns beyond the assessment scope were not implemented.
+
 ## Overview
 
 This microservice provides endpoints to:
@@ -143,6 +147,8 @@ Migrations run automatically on application startup (managed by `spring.flyway.e
 ---
 
 ## Testing
+
+> ℹ️ **Note:** The first execution of the test suite may take several minutes while Maven dependencies and Testcontainers images are downloaded. This is expected.
 
 ### Run All Tests
 
