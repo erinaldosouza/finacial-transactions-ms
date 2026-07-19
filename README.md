@@ -4,7 +4,7 @@ A simple REST API service for managing customer accounts and financial transacti
 
 > ℹ️ **Note:** This README and the project documentation are written in English because it is a requirement of the technical assessment. All source code, API documentation, and comments follow the same convention to maintain consistency throughout the project.
 
-> ℹ️ > **Note:** This application is production-oriented, but it is not intended to be a production-ready system. Production-specific concerns beyond the assessment scope were not implemented.
+> ℹ️ **Note:** This application is production-oriented, but it is not intended to be a production-ready system. Production-specific concerns beyond the assessment scope were not implemented.
 
 ## Overview
 
@@ -34,7 +34,7 @@ Built with **Spring Boot 4**, **PostgreSQL**, **Flyway migrations**, and compreh
 
 - Java 25+
 - Maven 3.8+
-- Docker & Docker Compose (optional, for containerized PostgreSQL)
+- Docker & Docker Compose (optional, for containerization)
 - PostgreSQL 18 (if running without Docker)
 
 ---
@@ -53,7 +53,7 @@ cd finacial-transactions-ms
 ```bash
 ./run.sh
 ```
-> ℹ️ This script handles PostgreSQL instantiation automatically.
+> ℹ️ This script handles application and environment startup automatically using containers.
 
 **Option B — Using Maven:**
 ```bash
@@ -63,7 +63,7 @@ cd finacial-transactions-ms
 
 **Option C — Build and run JAR:**
 ```bash
-mvn clean package
+./mvnw clean package
 java -jar target/financial_transactions_ms-0.0.1-SNAPSHOT.jar
 ```
 > ⚠️ **Important:** PostgreSQL must be running.
@@ -124,6 +124,30 @@ Records financial transactions for each account.
 | operation_type_id | INT | NOT NULL, FOREIGN KEY → operation_types | Type of transaction |
 | external_id | VARCHAR(255) | UNIQUE, NOT NULL | External UUID identifier |
 
+### Flyway Metadata Table
+
+Flyway automatically creates and manages the `flyway_schema_history` table to track database migrations.
+
+This table stores information about:
+- Applied migration versions
+- Migration execution timestamps
+- Migration status (success/failure)
+- Migration checksums to detect unexpected changes
+
+The table is managed exclusively by Flyway and should not be modified manually.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| installed_rank | INT | Order in which migrations were applied |
+| version | VARCHAR | Migration version identifier |
+| description | VARCHAR | Migration description |
+| type | VARCHAR | Migration type (e.g., SQL) |
+| script | VARCHAR | Migration script name |
+| checksum | INT | Migration checksum validation |
+| installed_by | VARCHAR | Database user that executed the migration |
+| installed_on | TIMESTAMP | Migration execution timestamp |
+| execution_time | INT | Migration execution duration in milliseconds |
+| success | BOOLEAN | Indicates whether the migration completed successfully |
 ### Database Relationships
 
 **Key Relationships:**
@@ -145,6 +169,24 @@ Database initialization is managed by Flyway:
 Migrations run automatically on application startup (managed by `spring.flyway.enabled: true`).
 
 ---
+
+### PostgreSQL Administration (pgAdmin)
+
+A pgAdmin container is available for database administration when running the application through Docker/Podman Compose.
+
+Access pgAdmin at:
+- http://localhost:5050
+
+Credentials:
+- Email: admin@admin.com
+- Password: admin
+
+To connect to the PostgreSQL database from pgAdmin, use the following connection settings:
+- Host: postgres
+- Port: 5432
+- Database: financial-transactions-db
+- Username: postgres
+- Password: postgres
 
 ## Testing
 
