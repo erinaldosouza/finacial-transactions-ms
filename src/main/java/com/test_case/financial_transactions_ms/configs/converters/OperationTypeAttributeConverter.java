@@ -1,4 +1,4 @@
-package com.test_case.financial_transactions_ms.configs;
+package com.test_case.financial_transactions_ms.configs.converters;
 
 
 import com.test_case.financial_transactions_ms.enums.OperationType;

@@ -26,7 +26,7 @@ public class AccountServiceImpl implements AccountService {
         var documentNumber = account.getCustomer().getDocumentNumber();
         var customer  = customerService.existsByDocumentNumber(documentNumber);
         if(customer) {
-            throw new ResourceAlreadyExistsException(String.format("Customer with document number: %s already have an account", documentNumber));
+            throw new ResourceAlreadyExistsException(String.format("Customer with document number: %s already has an account", documentNumber));
         }
 
         var createdCustomer = customerService.create(account.getCustomer());

@@ -10,10 +10,16 @@
 			"name": "Create Account",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "idempotency-key",
+						"value": "idpk-1",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"document_number\": \"document-number-here\"\n}",
+					"raw": "{\n    \"document_number\": \"11-digits-value-here\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -41,7 +47,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/v1/accounts/transaction-uuid-here",
+					"raw": "http://localhost:8080/v1/accounts/account-external-id-here",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -50,7 +56,7 @@
 					"path": [
 						"v1",
 						"accounts",
-						"transaction-uuid-here"
+						"account-external-id-here"
 					]
 				}
 			},
@@ -60,10 +66,16 @@
 			"name": "Create Transaction",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "idempotency-key",
+						"value": "idpk-2",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"account_id\": \"account-uuid-here\",\n\"operation_type_id\": 2,\n\"amount\": 1123.45\n}",
+					"raw": "{\n\"account_id\": \"valid-account-external-id-here\",\n\"operation_type_id\": 1,\n\"amount\": 10\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -103,7 +115,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/v1/transactions/transaction-uuid-here",
+					"raw": "http://localhost:8080/v1/transactions/transaction-external-id-here",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -112,7 +124,7 @@
 					"path": [
 						"v1",
 						"transactions",
-						"transaction-uuid-here"
+						"transaction-external-id-here"
 					]
 				}
 			},

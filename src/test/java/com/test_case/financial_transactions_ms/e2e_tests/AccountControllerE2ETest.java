@@ -1,12 +1,17 @@
 package com.test_case.financial_transactions_ms.e2e_tests;
 
 import com.test_case.financial_transactions_ms.dtos.AccountDTO;
+import com.test_case.financial_transactions_ms.dtos.TransactionDTO;
 import com.test_case.financial_transactions_ms.e2e_tests.configs.AbstractE2ETest;
+import com.test_case.financial_transactions_ms.enums.OperationType;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
+
+import java.math.BigDecimal;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -23,6 +28,7 @@ class AccountControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/accounts")
@@ -60,6 +66,7 @@ class AccountControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/accounts")
@@ -78,6 +85,7 @@ class AccountControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/accounts")
@@ -97,6 +105,7 @@ class AccountControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/accounts")
@@ -116,6 +125,7 @@ class AccountControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/accounts")
@@ -126,5 +136,28 @@ class AccountControllerE2ETest extends AbstractE2ETest {
                 .body("errors", notNullValue())
                 .body("errors", hasItem(containsString("must contain only numbers")));
     }
+
+
+    @Test
+    void shouldReturnBadRequestWhenIdempotencyKeyHeaderIsMissing() {
+
+        TransactionDTO request = new TransactionDTO(
+                null,
+                ACCOUNT_EXTERNAL_ID,
+                OperationType.CREDIT_VOUCHER,
+                new BigDecimal("100.00")
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/v1/accounts")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("title", notNullValue())
+                .body("status", equalTo(HttpStatus.BAD_REQUEST.value()));
+    }
+
 
 }

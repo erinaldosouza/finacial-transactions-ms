@@ -12,7 +12,7 @@ This microservice provides endpoints to:
 - **Create and retrieve customer accounts** associated with document numbers
 - **Create and retrieve transactions** linked to customer accounts
 
-Built with **Spring Boot 4**, **PostgreSQL**, **Flyway migrations**, and comprehensive **e2e and unit tests with Junit, Mockito, Rest-Assured and Testcontainers**.
+Built with **Spring Boot 4**, **PostgreSQL**, **Redis**, **Flyway migrations**, and comprehensive **e2e and unit tests with JUnit, Mockito, Rest-Assured and Testcontainers**.
 
 ---
 
@@ -21,6 +21,7 @@ Built with **Spring Boot 4**, **PostgreSQL**, **Flyway migrations**, and compreh
 - **Language**: Java 25
 - **Framework**: Spring Boot 4.1.0
 - **Database**: PostgreSQL 18
+- **Cache / Idempotency Store**: Redis
 - **Build Tool**: Maven
 - **Testing**: JUnit 5, Mockito, Rest-Assured, Testcontainers
 - **Database Migration**: Flyway
@@ -79,7 +80,26 @@ OpenAPI spec (YAML):
 http://localhost:8080/openapi.yaml
 ```
 
+
 ---
+## Idempotency
+
+To prevent duplicate processing of write operations, all **HTTP POST** endpoints require an `Idempotency-Key` request header.
+
+The application uses **Redis** to temporarily store processed idempotency keys and ensure that the same request is executed only once.
+
+Example:
+
+```http
+POST /v1/transactions
+Idempotency-Key: 9c1d9f77-3db6-4c90-95ef-b57d2d2dd2a4
+Content-Type: application/json
+{
+  "accountExternalId": "a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6",
+  "operationTypeId": 1,
+  "amount": -100.00
+}
+```
 
 ## Data Model
 
@@ -230,6 +250,12 @@ The project includes comprehensive test suites:
 
 ## Docker Deployment
 
+The containerized environment includes:
+
+- PostgreSQL 18
+- pgAdmin 4 (optional)
+- Redis
+
 ### Run with Docker Compose
 
 ```bash
@@ -267,6 +293,7 @@ All validation and application errors follow Problem Detail format:
 3. **Enum for Operation Types** — Type safety for transaction operations
 4. **Global Exception Handler** — Centralized error handling with ProblemDetail format
 5. **Testcontainers** — Isolated PostgreSQL instance per test class for true integration testing
+6. **Redis-based Idempotency** — POST requests require an `Idempotency-Key` header to prevent duplicate request processing during retries or network failures.
 
 ### Adding New Features
 
