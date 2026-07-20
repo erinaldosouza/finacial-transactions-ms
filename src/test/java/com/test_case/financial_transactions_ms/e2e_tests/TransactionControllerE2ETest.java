@@ -6,11 +6,12 @@ import com.test_case.financial_transactions_ms.enums.OperationType;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
@@ -33,6 +34,7 @@ class TransactionControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/transactions")
@@ -75,6 +77,7 @@ class TransactionControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/transactions")
@@ -98,6 +101,7 @@ class TransactionControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/transactions")
@@ -122,6 +126,7 @@ class TransactionControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/transactions")
@@ -145,6 +150,7 @@ class TransactionControllerE2ETest extends AbstractE2ETest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .body(request)
                 .when()
                 .post("/v1/transactions")
@@ -153,6 +159,27 @@ class TransactionControllerE2ETest extends AbstractE2ETest {
                 .body("title", equalTo("Validation Error"))
                 .body("status", equalTo(HttpStatus.BAD_REQUEST.value()))
                 .body("errors", notNullValue());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenIdempotencyKeyHeaderIsMissing() {
+
+        TransactionDTO request = new TransactionDTO(
+                null,
+                ACCOUNT_EXTERNAL_ID,
+                OperationType.CREDIT_VOUCHER,
+                new BigDecimal("100.00")
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/v1/transactions")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("title", notNullValue())
+                .body("status", equalTo(HttpStatus.BAD_REQUEST.value()));
     }
 
     private static Stream<String> provideInvalidAccountIds() {

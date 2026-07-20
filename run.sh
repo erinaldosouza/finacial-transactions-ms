@@ -61,6 +61,23 @@ done
 
 echo "PostgreSQL is ready."
 
+echo "Waiting for Redis..."
+
+SECONDS=0
+
+until $CONTAINER_CMD exec financial-transactions-redis \
+    redis-cli ping >/dev/null 2>&1
+do
+    if [ "$SECONDS" -ge 30 ]; then
+        echo "Timeout waiting for Redis."
+        exit 1
+    fi
+
+    sleep 2
+done
+
+echo "Redis is ready."
+
 echo "Waiting for application..."
 
 SECONDS=0
